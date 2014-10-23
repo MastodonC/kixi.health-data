@@ -9,10 +9,17 @@
             [kixi.health-data.gp-practice-counts :as counts]
             [kixi.health-data.munge :as munge]))
 
-
-(defn surgery-per-capita [scrips practice-counts]
+(defn surgery-per-capita [practice-counts scrips]
   (let [scrip-counts (scrips/sum-surgeries scrips)]
     (->> scrip-counts
          (map #(vector (first %)
                        (munge/per-capita (second %) (-> practice-counts (get (first %)) :total_all))))
          (remove #(nil? (second %))))))
+
+(defn process-csv
+  "Takes a function that operates on lazy sequences and a file and
+  evaulates the function within a with-open macro. Make sure you call
+  doall in the function you pass in to realise the lazy sequence."
+  [f file]
+  (with-open [rdr (io/reader file)]
+    (f (csv/read-csv rdr))))

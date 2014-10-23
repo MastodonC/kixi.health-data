@@ -49,17 +49,6 @@
         bnf-sub-map (select-keys (:bnf_code pdpi-record) query-keys)]
     (= bnf-query bnf-sub-map)))
 
-(defn grep-by-bnf
-  "Takes a partial bnf map and greps the records that match."
-  [bnf-query filename]
-  (with-open [rdr (io/reader (io/resource filename))]
-    (let [[header-row & records] (csv/read-csv rdr)
-          header (munge/keyword-header header-row)]
-      (->> records
-           (pmap #(pdpi-record header %))
-           (filter #(bnf-match? bnf-query %))
-           doall))))
-
 ;; (def total-items (sum-items (grep-antibiotics "gp-prescriptions/pdpi/T201406PDPI+BNFT.CSV")))
 (defn sum-items [scrips]
   (reduce (fn [acc scrip]
@@ -109,3 +98,23 @@
        (sort-by second)
        reverse
        (take k)))
+
+(defn prescriptions [rows]
+  (let [[header & records] rows
+        header-keys (munge/keyword-header header)]
+    (map #(pdpi-record header-keys %) records)))
+
+(defn grep-by-bnf
+  "Takes a partial bnf map and greps the records that match."
+  [bnf-query rows]
+  (->> rows
+       prescriptions
+       (filter #(bnf-match? bnf-query %))))
+
+(defn pdpi-files
+  ([dirname]
+     (->> (file-seq (io/file (io/resource dirname)))
+          (filter #(.isFile ^java.io.File %))
+          sort))
+  ([]
+     (pdpi-files "gp-prescriptions/pdpi/")))
