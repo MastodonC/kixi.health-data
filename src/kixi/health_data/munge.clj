@@ -15,8 +15,9 @@
        (map keyword)
        vec))
 
-;; (freq/stats (freq/bucket-frequencies 0.01 (map second (surgery-per-capita all-antibiotics all-surgeries))))
-(defn per-capita [num population]
+(defn per-capita
+  "Returns ratios of count over population"
+  [num population]
   (if (and (number? num) (number? population) (< 0 population))
-    (float (/ num population))
+    (/ num population)
     nil))

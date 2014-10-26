@@ -9,7 +9,9 @@
             [kixi.health-data.gp-practice-counts :as counts]
             [kixi.health-data.munge :as munge]))
 
-(defn surgery-per-capita [practice-counts scrips]
+(defn surgery-per-capita
+  "Returns ratios of drug items per patient."
+  [practice-counts scrips]
   (let [scrip-counts (scrips/sum-surgeries scrips)]
     (->> scrip-counts
          (map #(vector (first %)
