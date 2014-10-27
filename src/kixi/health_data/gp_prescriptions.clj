@@ -106,6 +106,11 @@
        reverse
        (take k)))
 
+(defn bottomk-surgeries [k surgeries]
+  (->> (vec surgeries)
+       (sort-by second)
+       (take k)))
+
 (defn prescriptions [rows]
   (let [[header & records] rows
         header-keys (munge/keyword-header header)]
