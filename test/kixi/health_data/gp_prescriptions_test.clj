@@ -12,7 +12,7 @@
     :pct "00K", :nic 21.41, :bnf_name "Diazepam_Tab 2mg", :practice "A81001", :period "201406", :quantity 749.0, :items 27, :sha "Q45", :act_cost 22.52}])
 
 (deftest grep-diazepam-2mg-test
-  (testing "Extract the hyptnotics (BNF Section 4, Chapter 1, Paragraph 2, Strength AH), or 2mg Diazepam from the test csv"
+  (testing "Extract the hyptnotics (BNF Chapter 4, Section 1, Paragraph 2, Strength AH), or 2mg Diazepam from the test csv"
     (is (= test-hypnotics
            (grep-by-bnf {:bnf_chapter "04" :bnf_section "01" :bnf_paragraph "02" :strength "AH"} csv-rows)))))
 
