@@ -3,6 +3,11 @@
 A Clojure library designed to munge and explore open data on health
 from HSCIC and others.
 
+## Build Status
+
+[![Build Status](https://travis-ci.org/MastodonC/kixi.health-data.svg)](https://travis-ci.org/MastodonC/kixi.health-data)
+
+
 ## Usage
 
 Fire up your repl
