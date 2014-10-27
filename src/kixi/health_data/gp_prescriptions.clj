@@ -50,7 +50,9 @@
     (= bnf-query bnf-sub-map)))
 
 ;; (def total-items (sum-items (grep-antibiotics "gp-prescriptions/pdpi/T201406PDPI+BNFT.CSV")))
-(defn sum-items [scrips]
+(defn sum-items
+  "Sum for each item in scrips across all surgeries"
+  [scrips]
   (reduce (fn [acc scrip]
             (let [bnf_code (-> scrip :bnf_code :bnf_code)]
               (assoc acc
@@ -59,6 +61,11 @@
                          (get-in acc [bnf_code :count])
                          (get scrip :items))
                  :bnf_name (:bnf_name scrip)}))) {} scrips))
+
+(defn sum-all
+  "Sum all the items in scrips across all types and surgeries"
+  [scrips]
+  (reduce (fn [acc n] (+ acc (:items n))) 0 scrips))
 
 ;; sum all the chemical items that are the same
 (defn sum-chemicals [scrips]
