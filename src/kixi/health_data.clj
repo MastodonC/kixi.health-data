@@ -7,7 +7,8 @@
             [com.stuartsierra.frequencies :as freq]
             [kixi.health-data.gp-prescriptions :as scrips]
             [kixi.health-data.gp-practice-counts :as counts]
-            [kixi.health-data.munge :as munge]))
+            [kixi.health-data.munge :as munge]
+            [kixi.health-data.ods :as ods]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; csv processing
@@ -41,22 +42,27 @@
          (remove #(nil? (second %))))))
 
 (defn- format-surgeries-months [[name recs]]
-  (let [[_ year month] (re-find #"(201.)(..)" name)]
-        (mapv (fn [[surgery ratio]] (vector year month surgery (float ratio))) recs)))
+  (let [[_ year month] (re-find #"(201.)(..)" name)
+        all-surgeries-details (ods/epraccur)]
+    (mapv (fn [[surgery ratio]]
+            (let [{:keys [full_address parent_organisation_code]}
+                  (get all-surgeries-details surgery {})]
+              (vector year month surgery full_address parent_organisation_code (float ratio))))
+          recs)))
 
 (defn top-surgeries [q k rows]
-  (let [all-surgeries (counts/gp-practice-counts)]
+  (let [all-surgeries-counts (counts/gp-practice-counts)]
     (->> rows
          (scrips/grep-by-bnf q)
-         (surgery-per-capita all-surgeries)
+         (surgery-per-capita all-surgeries-counts)
          (scrips/topk-surgeries k)
          doall)))
 
 (defn bottom-surgeries [q k rows]
-  (let [all-surgeries (counts/gp-practice-counts)]
+  (let [all-surgeries-counts (counts/gp-practice-counts)]
     (->> rows
          (scrips/grep-by-bnf q)
-         (surgery-per-capita all-surgeries)
+         (surgery-per-capita all-surgeries-counts)
          (scrips/bottomk-surgeries k)
          doall)))
 
