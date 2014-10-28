@@ -74,4 +74,4 @@
               (into {})
               doall))))
   ([]
-     (gp-practice-counts "reference/GP_Practice_counts.csv")")))
+     (gp-practice-counts "reference/GP_Practice_counts.csv")))
