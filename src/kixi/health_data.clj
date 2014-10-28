@@ -45,7 +45,7 @@
         (mapv (fn [[surgery ratio]] (vector year month surgery (float ratio))) recs)))
 
 (defn top-surgeries [q k rows]
-  (let [all-surgeries (counts/gp-practice-counts "gp-prescriptions/gp-practices/GP_Practice_counts.csv")]
+  (let [all-surgeries (counts/gp-practice-counts)]
     (->> rows
          (scrips/grep-by-bnf q)
          (surgery-per-capita all-surgeries)
@@ -53,7 +53,7 @@
          doall)))
 
 (defn bottom-surgeries [q k rows]
-  (let [all-surgeries (counts/gp-practice-counts "gp-prescriptions/gp-practices/GP_Practice_counts.csv")]
+  (let [all-surgeries (counts/gp-practice-counts)]
     (->> rows
          (scrips/grep-by-bnf q)
          (surgery-per-capita all-surgeries)

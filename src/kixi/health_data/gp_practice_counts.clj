@@ -63,12 +63,15 @@
       (throw t))))
 
 ;; (gp-practice-counts "gp-prescriptions/gp-practices/GP_Practice_counts.csv")
-(defn gp-practice-counts [filename]
-  (with-open [rdr (io/reader (io/resource filename))]
-    (let [[header-row & records] (csv/read-csv rdr)
-          header                 (munge/keyword-header header-row)]
-      (->> records
-           (map #(gp-population-record header %))
-           (map #(vector (:gp_practice_code %) %))
-           (into {})
-           doall))))
+(defn gp-practice-counts
+  ([filename]
+     (with-open [rdr (io/reader (io/resource filename))]
+       (let [[header-row & records] (csv/read-csv rdr)
+             header                 (munge/keyword-header header-row)]
+         (->> records
+              (map #(gp-population-record header %))
+              (map #(vector (:gp_practice_code %) %))
+              (into {})
+              doall))))
+  ([]
+     (gp-practice-counts "reference/GP_Practice_counts.csv")")))
