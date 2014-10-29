@@ -37,17 +37,21 @@
   [practice-counts scrips]
   (let [scrip-counts (scrips/sum-surgeries scrips)]
     (->> scrip-counts
-         (map #(vector (first %)
-                       (munge/per-capita (second %) (-> practice-counts (get (first %)) :total_all))))
+         (map #(let [item-count (second %)
+                     total-registered (-> practice-counts (get (first %)) :total_all)]
+                 (vector (first %)
+                         (munge/per-capita item-count total-registered)
+                         item-count
+                         total-registered)))
          (remove #(nil? (second %))))))
 
 (defn- format-surgeries-months [[name recs]]
   (let [[_ year month] (re-find #"(201.)(..)" name)
         all-surgeries-details (ods/epraccur)]
-    (mapv (fn [[surgery ratio]]
+    (mapv (fn [[surgery ratio item-count total-registered]]
             (let [{:keys [full_address parent_organisation_code]}
                   (get all-surgeries-details surgery {})]
-              (vector year month surgery full_address parent_organisation_code (float ratio))))
+              (vector year month surgery full_address parent_organisation_code (format "%.10f" (double ratio)) item-count total-registered)))
           recs)))
 
 (defn top-surgeries [q k rows]
@@ -83,7 +87,7 @@
                       month
                       (str bnf_chapter bnf_section bnf_paragraph bnf_subparagraph chemical)
                       count
-                      bnf_names)))
+                      (string/join ", " bnf_names))))
           recs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
