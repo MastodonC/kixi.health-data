@@ -6,6 +6,9 @@
 
 (set! *warn-on-reflection* true)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Record Parsing and Queries
+
 ;; example
 ;; [:sha :pct :practice :bnf_code :bnf_name :items :nic :act_cost :quantity :period]
 
@@ -48,6 +51,9 @@
   (let [query-keys (vec (keys bnf-query))
         bnf-sub-map (select-keys (:bnf_code pdpi-record) query-keys)]
     (= bnf-query bnf-sub-map)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; By Item
 
 ;; (def total-items (sum-items (grep-antibiotics "gp-prescriptions/pdpi/T201406PDPI+BNFT.CSV")))
 (defn sum-items
@@ -93,6 +99,8 @@
   (->> (sort-items items)
        (take k)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; By Surgery
 ;; all the scrips at a surgery
 (defn sum-surgeries [scrips]
   (reduce (fn [acc scrip]
@@ -111,6 +119,8 @@
        (sort-by second)
        (take k)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; API
 (defn prescriptions [rows]
   (let [[header & records] rows
         header-keys (munge/keyword-header header)]
