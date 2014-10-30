@@ -31,6 +31,13 @@
          (apply concat))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CCGs
+(defn all-ccgs [q rows]
+  (->> rows
+       (scrips/grep-by-bnf q) ;; seq of bnf record maps
+       scrips/sum-ccgs))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Surgeries
 (defn surgery-per-capita
   "Returns ratios of drug items per patient."
@@ -44,6 +51,18 @@
                          item-count
                          total-registered)))
          (remove #(nil? (second %))))))
+
+
+(defn topk-surgeries [k surgeries]
+  (->> (vec surgeries)
+       (sort-by second)
+       reverse
+       (take k)))
+
+(defn bottomk-surgeries [k surgeries]
+  (->> (vec surgeries)
+       (sort-by second)
+       (take k)))
 
 (defn- format-surgeries-months [[name recs]]
   (let [[_ year month] (re-find #"(201.)(..)" name)
@@ -59,7 +78,7 @@
     (->> rows
          (scrips/grep-by-bnf q)
          (surgery-per-capita all-surgeries-counts)
-         (scrips/topk-surgeries k)
+         (topk-surgeries k)
          doall)))
 
 (defn bottom-surgeries [q k rows]
@@ -67,7 +86,7 @@
     (->> rows
          (scrips/grep-by-bnf q)
          (surgery-per-capita all-surgeries-counts)
-         (scrips/bottomk-surgeries k)
+         (bottomk-surgeries k)
          doall)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -105,4 +124,9 @@
 (defn top-chemicals-all-months [q k dir]
   (query-prescriptions-all-months (partial top-chemicals q k)
                                   format-items-months
+                                  dir))
+
+(defn items-per-ccg [q dir]
+  (query-prescriptions-all-months (partial all-ccgs q)
+                                  identity
                                   dir))

@@ -2,6 +2,8 @@
   (:require [clojure.data.csv :as csv]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
+            [kixi.health-data.ccg :as ccg]
+            [kixi.health-data.ods :as ods]
             [kixi.health-data.munge :as munge]))
 
 (set! *warn-on-reflection* true)
@@ -108,16 +110,28 @@
               (:practice scrip)
               (+ (get acc (:practice scrip) 0) (:items scrip)))) {} scrips))
 
-(defn topk-surgeries [k surgeries]
-  (->> (vec surgeries)
-       (sort-by second)
-       reverse
-       (take k)))
-
-(defn bottomk-surgeries [k surgeries]
-  (->> (vec surgeries)
-       (sort-by second)
-       (take k)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; By CCG
+(defn sum-ccgs [scrips] ;; seq of bnf record maps
+  (let [epraccur (ods/epraccur)
+        ccgs     (ccg/ccg-names)]
+    (->> scrips
+         (map #(let [surgery_rec (get epraccur (:practice %))
+                     ccg_code    (:parent_organisation_code surgery_rec)]
+                 (assoc % :ccg_code ccg_code)))
+         (reduce (fn [acc scrip]
+                   (assoc acc
+                     (:ccg_code scrip)
+                     (+ (get acc (:ccg_code scrip) 0) (:items scrip)))) {})
+         ;; (map #(let [[ccg_code total_items] %]
+         ;;         (vector ccg_code total_items)))
+         (map #(let [[ccg_code total_items] %
+                     ccg_rec        (get ccgs ccg_code)
+                     ccg_population (if ccg_rec
+                                      (Integer/parseInt (clojure.string/replace (:registered_population_2012 ccg_rec) "," ""))
+                                      nil)]
+                 (conj % ccg_population)))
+         (remove #(nil? (last %))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; API
