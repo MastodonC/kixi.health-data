@@ -27,8 +27,7 @@
     (->> (pmap #(vector %1 (process-csv querier %2))
                (map #(.getName %) files)
                files)
-         (map formatter)
-         (apply concat))))
+         (map formatter))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CCGs
@@ -110,6 +109,17 @@
           recs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Sum of all the things
+(defn sum-all [q rows]
+  (->> rows
+       (scrips/grep-by-bnf q)
+       scrips/sum-all))
+
+(defn format-all-sum-months [[name sum]]
+  (let [[_ year month] (re-find #"(201.)(..)" name)]
+    (vector year month sum)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; API
 (defn top-surgeries-all-months [q k dir]
   (query-prescriptions-all-months (partial top-surgeries q k)
@@ -129,4 +139,9 @@
 (defn items-per-ccg [q dir]
   (query-prescriptions-all-months (partial all-ccgs q)
                                   identity
+                                  dir))
+
+(defn all-items [q dir]
+  (query-prescriptions-all-months (partial sum-all q)
+                                  format-all-sum-months
                                   dir))
