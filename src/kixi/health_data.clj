@@ -7,6 +7,7 @@
             [com.stuartsierra.frequencies :as freq]
             [kixi.health-data.gp-prescriptions :as scrips]
             [kixi.health-data.gp-practice-counts :as counts]
+            [kixi.health-data.ccg :as ccg]
             [kixi.health-data.munge :as munge]
             [kixi.health-data.ods :as ods]))
 
@@ -35,6 +36,15 @@
   (->> rows
        (scrips/grep-by-bnf q) ;; seq of bnf record maps
        scrips/sum-ccgs))
+
+(defn format-ccg-items [[name recs]]
+  (let [[_ year month] (re-find #"(201.)(..)" name)
+        ccg-names (ccg/ccg-names)]
+    (mapv (fn [[ccg_code items patients]]
+            (let [ccg-rec (get ccg-names ccg_code)
+                  ccg_name (:ccg_name ccg-rec)]
+              (vector year month ccg_code ccg_name (float (/ items patients)) items patients)))
+          recs)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Surgeries
@@ -122,24 +132,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; API
 (defn top-surgeries-all-months [q k dir]
-  (query-prescriptions-all-months (partial top-surgeries q k)
-                                  format-surgeries-months
-                                  dir))
+  (->> (query-prescriptions-all-months (partial top-surgeries q k)
+                                       format-surgeries-months
+                                       dir)
+       (apply concat)))
 
 (defn bottom-surgeries-all-months [q k dir]
-  (query-prescriptions-all-months (partial bottom-surgeries q k)
-                                  format-surgeries-months
-                                  dir))
+  (->> (query-prescriptions-all-months (partial bottom-surgeries q k)
+                                       format-surgeries-months
+                                       dir)
+       (apply concat)))
 
 (defn top-chemicals-all-months [q k dir]
-  (query-prescriptions-all-months (partial top-chemicals q k)
-                                  format-items-months
-                                  dir))
+  (->> (query-prescriptions-all-months (partial top-chemicals q k)
+                                       format-items-months
+                                       dir)
+       (apply concat)))
 
 (defn items-per-ccg [q dir]
-  (query-prescriptions-all-months (partial all-ccgs q)
-                                  identity
-                                  dir))
+  (->> (query-prescriptions-all-months (partial all-ccgs q)
+                                       format-ccg-items
+                                       dir)
+       (apply concat)))
 
 (defn all-items [q dir]
   (query-prescriptions-all-months (partial sum-all q)
