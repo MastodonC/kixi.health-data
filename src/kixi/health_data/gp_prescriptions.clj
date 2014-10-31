@@ -147,6 +147,13 @@
        prescriptions
        (filter #(bnf-match? bnf-query %))))
 
+(defn invert-grep-by-bnf
+  "Takes a partial bnf map and greps the records that match."
+  [bnf-query rows]
+  (->> rows
+       prescriptions
+       (filter #((complement bnf-match?) bnf-query %))))
+
 (defn pdpi-files
   ([dirname]
      (->> (file-seq (io/file (io/resource dirname)))
