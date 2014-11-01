@@ -11,6 +11,8 @@
             [kixi.health-data.munge :as munge]
             [kixi.health-data.ods :as ods]))
 
+(set! *warn-on-reflection* true)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; csv processing
 (defn process-csv
@@ -26,7 +28,7 @@
 (defn query-prescriptions-all-months [querier formatter dir]
   (let [files (scrips/pdpi-files dir)]
     (->> (pmap #(vector %1 (process-csv querier %2))
-               (map #(.getName %) files)
+               (map #(.getName ^java.io.File %) files)
                files)
          (map formatter))))
 
