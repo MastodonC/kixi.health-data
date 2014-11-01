@@ -53,8 +53,8 @@
 
 
 (def top-chemical-sums
-  [ [{:chemical "T0",:bnf_subparagraph "0",:bnf_paragraph "01",:bnf_section "01",:bnf_chapter "04"} {:count 117,:bnf_names #{"Temazepam_Tab 10mg" "Temazepam_Tab 20mg"}}]
-    [{:chemical "K0",:bnf_subparagraph "0",:bnf_paragraph "02",:bnf_section "01",:bnf_chapter "04"} {:count 70, :bnf_names #{"Diazepam_Tab 5mg" "Diazepam_Tab 2mg"}}]])
+  [[{:chemical "T0",:bnf_subparagraph "0",:bnf_paragraph "01",:bnf_section "01",:bnf_chapter "04"} {:count 117,:bnf_names #{"Temazepam_Tab 10mg" "Temazepam_Tab 20mg"}}]
+   [{:chemical "K0",:bnf_subparagraph "0",:bnf_paragraph "02",:bnf_section "01",:bnf_chapter "04"} {:count 70, :bnf_names #{"Diazepam_Tab 5mg" "Diazepam_Tab 2mg"}}]])
 
 (deftest top-2-chemicals-test
   (testing "Get the top 2 chemicals"
@@ -71,11 +71,3 @@
            (->> csv-rows
                 (grep-by-bnf {:bnf_chapter "04" :bnf_section "01"})
                 sum-surgeries)))))
-
-(deftest top-surgery-test
-  (testing "Find the top surgery for a drug type"
-    (is (= [["A81001" 168]]
-           (->> csv-rows
-                (grep-by-bnf {:bnf_chapter "04" :bnf_section "01"})
-                sum-surgeries
-                (topk-surgeries 1))))))
