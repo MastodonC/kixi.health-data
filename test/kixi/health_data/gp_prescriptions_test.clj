@@ -7,6 +7,13 @@
 
 (def csv-rows (csv/read-csv (slurp (io/file (io/resource "test/test-pdpi.csv")))))
 
+(deftest greps-are-equal
+  (testing "These 2 grep styles should be equal"
+      (is (= (grep-by-bnf {:bnf_chapter "04" :bnf_section "01"} csv-rows)
+             (->> (grep-bnf-by-string "0401" csv-rows)
+                  (map #(pdpi-record
+                         [:sha :pct :practice :bnf_code :bnf_name :items :nic :act_cost :quantity :period] %)))))))
+
 (def test-hypnotics
   [{:bnf_code {:bnf_paragraph "02", :bnf_section "01", :chemical "K0", :bnf_subparagraph "0", :bnf_code "0401020K0AAAHAH", :product "AA", :strength "AH", :bnf_chapter "04", :equivalent "AH"},
     :pct "00K", :nic 21.41, :bnf_name "Diazepam_Tab 2mg", :practice "A81001", :period "201406", :quantity 749.0, :items 27, :sha "Q45", :act_cost 22.52}])

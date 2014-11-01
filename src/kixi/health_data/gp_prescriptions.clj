@@ -157,6 +157,10 @@
        prescriptions
        (filter #((complement bnf-match?) bnf-query %))))
 
+(defn grep-bnf-by-string [^String string rows]
+  (->> rows
+       (filter #(.startsWith ^String (nth % 3) string))))
+
 (defn pdpi-files
   ([dirname]
      (->> (file-seq (io/file (io/resource dirname)))
