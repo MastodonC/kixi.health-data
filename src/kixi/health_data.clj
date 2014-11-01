@@ -1,6 +1,5 @@
 (ns kixi.health-data
   (:require [clojure.data.csv :as csv]
-            [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.string :as string]
             [taoensso.timbre :as log]

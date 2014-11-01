@@ -1,6 +1,5 @@
 (ns kixi.health-data.gp-prescriptions
-  (:require [clojure.data.csv :as csv]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [taoensso.timbre :as log]
             [kixi.health-data.ccg :as ccg]
             [kixi.health-data.ods :as ods]
