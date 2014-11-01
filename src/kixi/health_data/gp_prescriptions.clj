@@ -57,7 +57,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; By Item
 
-;; (def total-items (sum-items (grep-antibiotics "gp-prescriptions/pdpi/T201406PDPI+BNFT.CSV")))
 (defn sum-items
   "Sum for each item in scrips across all surgeries"
   [scrips]
@@ -65,10 +64,11 @@
             (let [bnf_code (-> scrip :bnf_code :bnf_code)]
               (assoc acc
                 bnf_code
-                {:count ((fnil + 0)
-                         (get-in acc [bnf_code :count])
-                         (get scrip :items))
-                 :bnf_name (:bnf_name scrip)}))) {} scrips))
+                {:count (+ (get-in acc [bnf_code :count] 0)
+                           (get scrip :items 0))
+                 :bnf_name (:bnf_name scrip)})))
+          {}
+          scrips))
 
 (defn sum-all
   "Sum all the items in scrips across all types and surgeries"
@@ -83,7 +83,8 @@
                                (select-keys [:bnf_chapter :bnf_section :bnf_paragraph :bnf_subparagraph :chemical]))]
               (assoc acc
                 bnf_code
-                {:count (+ (get-in acc [bnf_code :count] 0) (get scrip :items))
+                {:count (+ (get-in acc [bnf_code :count] 0)
+                           (get scrip :items 0))
                  :bnf_names (conj
                              (get-in acc [bnf_code :bnf_names] #{})
                              (:bnf_name scrip))}))) {} scrips))
@@ -108,7 +109,10 @@
   (reduce (fn [acc scrip]
             (assoc acc
               (:practice scrip)
-              (+ (get acc (:practice scrip) 0) (:items scrip)))) {} scrips))
+              (+ (get acc (:practice scrip) 0)
+                 (get scrip :items 0))))
+          {}
+          scrips))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; By CCG
@@ -122,9 +126,8 @@
          (reduce (fn [acc scrip]
                    (assoc acc
                      (:ccg_code scrip)
-                     (+ (get acc (:ccg_code scrip) 0) (:items scrip)))) {})
-         ;; (map #(let [[ccg_code total_items] %]
-         ;;         (vector ccg_code total_items)))
+                     (+ (get acc (:ccg_code scrip) 0)
+                        (get scrip :items 0)))) {})
          (map #(let [[ccg_code total_items] %
                      ccg_rec        (get ccgs ccg_code)
                      ccg_population (if ccg_rec
