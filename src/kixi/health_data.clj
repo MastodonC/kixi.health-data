@@ -130,6 +130,13 @@
   (let [[_ year month] (re-find #"(201.)(..)" name)]
     (vector year month sum)))
 
+(defn fast-sum-all [q rows]
+  (->> rows
+       (scrips/grep-bnf-by-string q)
+       (reduce (fn [acc row]
+                 (+ acc
+                    (Integer/parseInt ^String (nth row 5)))) 0)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; API
 (defn top-surgeries-all-months [q k dir]
@@ -158,5 +165,10 @@
 
 (defn all-items [q dir]
   (query-prescriptions-all-months (partial sum-all q)
+                                  format-all-sum-months
+                                  dir))
+
+(defn fast-all-items [q dir]
+  (query-prescriptions-all-months (partial fast-sum-all q)
                                   format-all-sum-months
                                   dir))

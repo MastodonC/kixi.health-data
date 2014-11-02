@@ -22,16 +22,17 @@
 ;; generic equivalent, unless the brand does not have a generic equivalent in
 ;; which case A0 will be used.
 (defn split-bnf-code [^String code]
-  {:bnf_code code
-   :bnf_chapter      (.substring code 0 2) ;; Characters 1 & 2 show the BNF Chapter,
-   :bnf_section      (.substring code 2 4) ;; 3 & 4 show the BNF Section,
-   :bnf_paragraph    (.substring code 4 6) ;; 5 & 6 show the BNF paragraph,
-   :bnf_subparagraph (.substring code 6 7) ;; 7 shows the BNF sub-paragraph and
-   :chemical         (.substring code 7 9) ;; 8 & 9 show the Chemical Substance.
-   :product          (.substring code 9 11) ;; 10 & 11 show the Product
-   :strength         (when (= 15 (count code)) (.substring code 11 13)) ;; 12 & 13 show the Strength and Formulation
-   :equivalent       (when (= 15 (count code)) (.substring code 13 15)) ;; 14 & 15 show the equivalent
-   })
+  (let [bnf-15-char? (= 15 (count code))]
+    {:bnf_code code
+     :bnf_chapter      (.substring code 0 2) ;; Characters 1 & 2 show the BNF Chapter,
+     :bnf_section      (.substring code 2 4) ;; 3 & 4 show the BNF Section,
+     :bnf_paragraph    (.substring code 4 6) ;; 5 & 6 show the BNF paragraph,
+     :bnf_subparagraph (.substring code 6 7) ;; 7 shows the BNF sub-paragraph and
+     :chemical         (.substring code 7 9) ;; 8 & 9 show the Chemical Substance.
+     :product          (.substring code 9 11) ;; 10 & 11 show the Product
+     :strength         (when bnf-15-char? (.substring code 11 13)) ;; 12 & 13 show the Strength and Formulation
+     :equivalent       (when bnf-15-char? (.substring code 13 15)) ;; 14 & 15 show the equivalent
+     }))
 
 (defn pdpi-record [header row]
   (try
@@ -150,7 +151,7 @@
        (filter #(bnf-match? bnf-query %))))
 
 (defn invert-grep-by-bnf
-  "Takes a partial bnf map and greps the records that match."
+  "Takes a partial bnf map and greps the records that do NOT match."
   [bnf-query rows]
   (->> rows
        prescriptions
