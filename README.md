@@ -15,6 +15,16 @@ call some of the functions.
 
 ### Data Sources
 
+
+#### Data License
+
+All of this data is available under the Open Government
+License. Details of the license are available here:
+
+http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+
+#### GP Practice Prescribing Data
+
 There are a number of data sources we use to analyse NHS Prescription
 data. Currently we are only analysing data for NHS England.
 Prescription data at the presentation level for GP Surgeries exists
@@ -22,24 +32,27 @@ for the NHS in England, Wales and Northern Ireland. NHS Scotland does
 not currently produce prescription data at the presentation level for
 GP surgeries, but they have plans to do it during 2014-2015.
 
-All of this data is available under the Open Government
-License. Details of the license are available here:
-
-http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+##### England
 
 The GP practice prescribing data - Presentation level is  available at
 data.gov.uk here:
 
 http://data.gov.uk/dataset/prescribing-by-gp-practice-presentation-level
 
+##### Wales
+
 The GP Practice prescribing data for Wales is available here:
 
 http://www.wales.nhs.uk/sites3/page.cfm?orgid=428&pid=65866
+
+##### Northern Ireland
 
 The GP Practice prescribing data for Northern Ireland is available
 here:
 
 http://www.hscbusiness.hscni.net/services/2471.htm
+
+#### British National Formulary
 
 The British National Formulary is available here:
 
@@ -49,6 +62,8 @@ This gives you a way of understanding the format of BNF numbers and
 allows you to understand how particular medicines are used to treat
 different categories of illness. It does not give you a one to one
 mapping of illness to drug though and should be used with care.
+
+#### GP Practice Organisational Data
 
 The names and mapping of GP Practices in England to Clinical
 Commissioning Groups is done by referencing the Details of GPs, GP
@@ -61,6 +76,8 @@ Specifically this file:
 
 http://systems.hscic.gov.uk/data/ods/datadownloads/data-files/epraccur.zip
 
+#### CCG Names and other data
+
 CCG Names are available from NHS England here:
 
 http://www.england.nhs.uk/resources/ccg-directory/
@@ -68,6 +85,8 @@ http://www.england.nhs.uk/resources/ccg-directory/
 Specifically this file:
 
 http://www.england.nhs.uk/wp-content/uploads/2012/11/final-ccg-rca.xls
+
+#### GP Practice and CCG Population Data
 
 The number of patients at each GP Practice was found at data.gov.uk
 here:
